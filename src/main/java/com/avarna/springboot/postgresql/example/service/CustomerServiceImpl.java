@@ -2,6 +2,7 @@ package com.avarna.springboot.postgresql.example.service;
 
 import com.avarna.springboot.postgresql.example.domain.Customer;
 import com.avarna.springboot.postgresql.example.entity.CustomerEntity;
+import com.avarna.springboot.postgresql.example.exception.CustomerNotFoundException;
 import com.avarna.springboot.postgresql.example.repository.ICustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -35,8 +36,8 @@ public class CustomerServiceImpl implements ICustomerService {
     @Override
     public Customer findById(UUID id) {
         Optional<CustomerEntity> optionalMemberEntity = memberRepository.findById(id);
-        return optionalMemberEntity.map(memberEntity -> modelMapper.map(memberEntity, Customer.class)).orElse(null);
-
+        return optionalMemberEntity.map(memberEntity -> modelMapper.map(memberEntity, Customer.class))
+                .orElseThrow(()-> new CustomerNotFoundException("Customer id is not found :" + id.toString()));
     }
 
     @Override
@@ -46,7 +47,7 @@ public class CustomerServiceImpl implements ICustomerService {
             Type targetListType =new TypeToken<List<Customer>>(){}.getType();
             return modelMapper.map(customerEntities,targetListType);
         }
-        throw new RuntimeException("Customers not found");
+        throw new CustomerNotFoundException("Customers not found");
     }
 
     @Override
@@ -58,7 +59,7 @@ public class CustomerServiceImpl implements ICustomerService {
             memberRepository.save(existingMember);
         } else {
             // Handle the case when member with the given ID is not found
-            throw new RuntimeException("Customer not found with ID: " + id);
+            throw new CustomerNotFoundException("Customer not found with ID: " + id);
         }
     }
 
