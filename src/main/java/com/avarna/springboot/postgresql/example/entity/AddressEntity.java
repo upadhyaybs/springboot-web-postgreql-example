@@ -5,20 +5,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
-@Entity(name = "customer")
-@Table(name = "customer", schema = "customer")
+@Entity(name = "addresses")
+@Table(name = "addresses", schema = "customer")
 @NoArgsConstructor
-public class CustomerEntity {
+public class AddressEntity {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -26,17 +22,20 @@ public class CustomerEntity {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    private UUID id;
-    private String firstName;
-    private String lastName;
-    private Date dateOfBirth;
+    private UUID addressUuid;
+    private String addressLine1;
+    private String addressLine2;
+    private String city;
+    private String state;
+    private String postalCode;
+    private String country;
     private String createdBy;
     private LocalDateTime createdOn;
     private String updatedBy;
     private LocalDateTime updatedOn;
 
-    @OneToMany (mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<AddressEntity> addresses=new ArrayList<>();
-
+    @ManyToOne
+    @JoinColumn(name="customer_id")
+    private CustomerEntity customer;
 
 }
